@@ -1,34 +1,32 @@
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { getDog } from '@/features/dogs/api/dogsApi';
-import type { DogResponse } from '@/features/dogs/schemas/dogSchema';
 import type { Dog } from '@/features/dogs/types/dog';
 import { transformDog } from '@/features/dogs/utils/transformDog';
-import {
-  createParsedQueryOptions,
-  type UseSelectQueryOptions,
-} from '@/lib/query';
+import type { UseSelectQueryOptions } from '@/lib/query';
 import { queryKeys } from '@/lib/queryKeys';
 
-export function getDogQueryOptions<TResult = Dog | null>(
-  ownerId: string | undefined,
-  options?: UseSelectQueryOptions<Dog | null, TResult>,
-) {
-  const { select, ...rest } = options ?? {};
+async function fetchDog(ownerId: string) {
+  const dog = await getDog(ownerId);
+  return dog ? transformDog(dog) : null;
+}
 
-  return createParsedQueryOptions<DogResponse | null, Dog | null, TResult>({
+export function getDogQueryOptions(ownerId: string | undefined) {
+  return queryOptions({
     queryKey: queryKeys.dog(ownerId ?? 'unknown'),
-    queryFn: () => getDog(ownerId!),
-    transform: (dog) => (dog ? transformDog(dog) : null),
-    select,
-    ...rest,
-    enabled: rest.enabled ?? Boolean(ownerId),
+    queryFn: () => fetchDog(ownerId!),
+    enabled: Boolean(ownerId),
   });
 }
 
-export function useGetDog<TResult = Dog | null>(
+export function useGetDog<TData = Dog | null>(
   ownerId: string | undefined,
-  options?: UseSelectQueryOptions<Dog | null, TResult>,
+  options?: UseSelectQueryOptions<Dog | null, TData>,
 ) {
-  return useQuery(getDogQueryOptions(ownerId, options));
+  return useQuery({
+    queryKey: queryKeys.dog(ownerId ?? 'unknown'),
+    queryFn: () => fetchDog(ownerId!),
+    ...options,
+    enabled: options?.enabled ?? Boolean(ownerId),
+  });
 }

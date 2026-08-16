@@ -1,60 +1,59 @@
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { getWalk, getWalks } from '@/features/walks/api/walksApi';
-import type { WalkResponse } from '@/features/walks/schemas/walkSchema';
 import type { Walk } from '@/features/walks/types/walk';
 import {
   transformWalk,
   transformWalks,
 } from '@/features/walks/utils/transformWalk';
-import {
-  createParsedQueryOptions,
-  type UseSelectQueryOptions,
-} from '@/lib/query';
+import type { UseSelectQueryOptions } from '@/lib/query';
 import { queryKeys } from '@/lib/queryKeys';
 
-export function getWalksQueryOptions<TResult = Walk[]>(
-  dogId: string | undefined,
-  options?: UseSelectQueryOptions<Walk[], TResult>,
-) {
-  const { select, ...rest } = options ?? {};
+async function fetchWalks(dogId: string) {
+  return transformWalks(await getWalks(dogId));
+}
 
-  return createParsedQueryOptions<WalkResponse[], Walk[], TResult>({
+async function fetchWalk(walkId: string) {
+  const walk = await getWalk(walkId);
+  return walk ? transformWalk(walk) : null;
+}
+
+export function getWalksQueryOptions(dogId: string | undefined) {
+  return queryOptions({
     queryKey: queryKeys.walks(dogId ?? 'unknown'),
-    queryFn: () => getWalks(dogId!),
-    transform: transformWalks,
-    select,
-    ...rest,
-    enabled: rest.enabled ?? Boolean(dogId),
+    queryFn: () => fetchWalks(dogId!),
+    enabled: Boolean(dogId),
   });
 }
 
-export function useGetWalks<TResult = Walk[]>(
+export function useGetWalks<TData = Walk[]>(
   dogId: string | undefined,
-  options?: UseSelectQueryOptions<Walk[], TResult>,
+  options?: UseSelectQueryOptions<Walk[], TData>,
 ) {
-  return useQuery(getWalksQueryOptions(dogId, options));
-}
-
-export function getWalkQueryOptions<TResult = Walk | null>(
-  walkId: string | undefined,
-  options?: UseSelectQueryOptions<Walk | null, TResult>,
-) {
-  const { select, ...rest } = options ?? {};
-
-  return createParsedQueryOptions<WalkResponse | null, Walk | null, TResult>({
-    queryKey: queryKeys.walk(walkId ?? 'unknown'),
-    queryFn: () => getWalk(walkId!),
-    transform: (walk) => (walk ? transformWalk(walk) : null),
-    select,
-    ...rest,
-    enabled: rest.enabled ?? Boolean(walkId),
+  return useQuery({
+    queryKey: queryKeys.walks(dogId ?? 'unknown'),
+    queryFn: () => fetchWalks(dogId!),
+    ...options,
+    enabled: options?.enabled ?? Boolean(dogId),
   });
 }
 
-export function useGetWalk<TResult = Walk | null>(
+export function getWalkQueryOptions(walkId: string | undefined) {
+  return queryOptions({
+    queryKey: queryKeys.walk(walkId ?? 'unknown'),
+    queryFn: () => fetchWalk(walkId!),
+    enabled: Boolean(walkId),
+  });
+}
+
+export function useGetWalk<TData = Walk | null>(
   walkId: string | undefined,
-  options?: UseSelectQueryOptions<Walk | null, TResult>,
+  options?: UseSelectQueryOptions<Walk | null, TData>,
 ) {
-  return useQuery(getWalkQueryOptions(walkId, options));
+  return useQuery({
+    queryKey: queryKeys.walk(walkId ?? 'unknown'),
+    queryFn: () => fetchWalk(walkId!),
+    ...options,
+    enabled: options?.enabled ?? Boolean(walkId),
+  });
 }

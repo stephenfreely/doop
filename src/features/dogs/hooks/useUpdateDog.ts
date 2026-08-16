@@ -1,13 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { updateDog } from '@/features/dogs/api/dogsApi';
+import { transformDog } from '@/features/dogs/utils/transformDog';
 import { queryKeys } from '@/lib/queryKeys';
 
 export function useUpdateDog(ownerId: string | undefined) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: {
+    mutationFn: async (input: {
       name: string;
       breed?: string;
       photoUrl?: string;
@@ -15,7 +16,7 @@ export function useUpdateDog(ownerId: string | undefined) {
       if (!ownerId) {
         throw new Error('You must be signed in to update a dog profile');
       }
-      return updateDog(ownerId, input);
+      return transformDog(await updateDog(ownerId, input));
     },
     onSuccess: (dog) => {
       if (ownerId) {
