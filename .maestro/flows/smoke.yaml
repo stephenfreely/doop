@@ -1,0 +1,107 @@
+# Flow: smoke
+#
+# Purpose:
+#   Critical-path happy journey: sign in -> add a dog -> start a walk ->
+#   log a stool sample mid-walk -> complete the walk -> see it (with the
+#   stool log) in walk details -> see it in history. This is the one flow
+#   that must pass before anything ships.
+#
+# Preconditions: none — clears app state itself.
+#
+# Tags: smoke
+#
+# IDs used (in order):
+#   sign-in.form, sign-in.email-field, sign-in.password-field,
+#   sign-in.submit-button, home.add-dog-button, dog.name-field,
+#   dog.breed-field, dog.save-button, dog.success-text,
+#   home.start-walk-button, walk-active.status-text,
+#   walk-active.points-text, walk-active.log-stool-button,
+#   stool.rating-4, stool.notes-field, stool.save-button,
+#   walk-active.stool-count-text, walk-active.stop-button,
+#   walk-details.map, walk-details.stool-item.<id>, tabs.history-tab,
+#   history.list, history.walk-item.<id>
+#
+# Flake notes:
+#   - GPS: the iOS simulator reports no location until one is simulated.
+#     `setLocation` is called once the active-walk screen is up, then we
+#     wait for "walk-active.points-text" to contain a non-zero count
+#     before stopping — completing a walk with zero GPS points routes into
+#     the discard/retry UI instead (see flows/walk-discard.yaml), which
+#     would make this flow fail at the wrong step.
+#   - We don't assert the exact distance or GPS point count, only that at
+#     least one point was captured — simulator timing for the first
+#     watchPositionAsync callback varies.
+#   - Mock latency is ~500ms per API call; all waits use
+#     extendedWaitUntil rather than sleeps.
+appId: com.anonymous.doop
+tags:
+  - smoke
+---
+- clearState
+- clearKeychain
+- runFlow: ../subflows/grant-location.yaml
+- runFlow: ../subflows/login.yaml
+- runFlow: ../subflows/add-dog.yaml
+
+- tapOn:
+    id: "home.start-walk-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.status-text"
+    timeout: 8000
+
+- setLocation:
+    latitude: 37.7749
+    longitude: -122.4194
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.points-text"
+      text: ".*[1-9].*"
+    timeout: 15000
+
+- tapOn:
+    id: "walk-active.log-stool-button"
+- extendedWaitUntil:
+    visible:
+      id: "stool.rating-4"
+    timeout: 8000
+- tapOn:
+    id: "stool.rating-4"
+- tapOn:
+    id: "stool.notes-field"
+- inputText: "Firm, normal colour. No concerns."
+- hideKeyboard
+- tapOn:
+    id: "stool.save-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.stool-count-text"
+      text: ".*1.*"
+    timeout: 8000
+
+- tapOn:
+    id: "walk-active.stop-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-details.map"
+    timeout: 10000
+- assertVisible:
+    id: "walk-details\\.stool-item\\..+"
+
+- back
+- extendedWaitUntil:
+    visible:
+      id: "home.start-walk-button"
+    timeout: 8000
+- tapOn:
+    id: "tabs.history-tab"
+- extendedWaitUntil:
+    visible:
+      id: "history.list"
+    timeout: 8000
+- tapOn:
+    id: "history\\.walk-item\\..+"
+- extendedWaitUntil:
+    visible:
+      id: "walk-details.map"
+    timeout: 8000

@@ -35,6 +35,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
+          tabBarButtonTestID: 'tabs.home-tab',
           tabBarIcon: ({ color, size }) => (
             <TabBarIcon name="home-outline" color={color} size={size} />
           ),
@@ -44,6 +45,7 @@ export default function TabLayout() {
         name="history"
         options={{
           title: 'History',
+          tabBarButtonTestID: 'tabs.history-tab',
           tabBarIcon: ({ color, size }) => (
             <TabBarIcon name="time-outline" color={color} size={size} />
           ),
@@ -53,6 +55,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
+          tabBarButtonTestID: 'tabs.settings-tab',
           tabBarIcon: ({ color, size }) => (
             <TabBarIcon name="settings-outline" color={color} size={size} />
           ),

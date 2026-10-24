@@ -6,11 +6,12 @@ import { AppText } from '@/components/Text/AppText';
 type EmptyStateProps = {
   title: string;
   message: string;
+  testID?: string;
 };
 
-export function EmptyState({ title, message }: EmptyStateProps) {
+export function EmptyState({ title, message, testID }: EmptyStateProps) {
   return (
-    <View style={styles.wrap}>
+    <View style={styles.wrap} testID={testID}>
       <AppText variant="subtitle">{title}</AppText>
       <AppText variant="caption" style={styles.message}>
         {message}

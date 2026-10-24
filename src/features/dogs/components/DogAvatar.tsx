@@ -7,18 +7,26 @@ type DogAvatarProps = {
   name: string;
   photoUrl?: string;
   size?: 'sm' | 'lg';
+  testID?: string;
 };
 
-export function DogAvatar({ name, photoUrl, size = 'sm' }: DogAvatarProps) {
+export function DogAvatar({
+  name,
+  photoUrl,
+  size = 'sm',
+  testID,
+}: DogAvatarProps) {
   styles.useVariants({ size });
   const initial = name.trim().charAt(0).toUpperCase() || '?';
 
   if (photoUrl) {
-    return <Image source={{ uri: photoUrl }} style={styles.image} />;
+    return (
+      <Image source={{ uri: photoUrl }} style={styles.image} testID={testID} />
+    );
   }
 
   return (
-    <View style={styles.fallback}>
+    <View style={styles.fallback} testID={testID}>
       <AppText style={styles.initial}>{initial}</AppText>
     </View>
   );

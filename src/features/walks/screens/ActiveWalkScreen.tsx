@@ -43,6 +43,7 @@ export function ActiveWalkScreen() {
   return (
     <View style={styles.screen}>
       <WalkMap
+        testID="walk-active.map"
         route={route}
         showsUserLocation
         followsUserLocation={status === 'active'}
@@ -55,11 +56,13 @@ export function ActiveWalkScreen() {
             size={18}
             color={theme.colors.primary}
           />
-          <AppText variant="caption">
+          <AppText testID="walk-active.status-text" variant="caption">
             {isPaused ? 'Paused' : status === 'active' ? 'Walking' : 'Stopped'}
           </AppText>
         </View>
-        <AppText variant="stat">{formatDistance(distanceMetres)}</AppText>
+        <AppText testID="walk-active.distance-text" variant="stat">
+          {formatDistance(distanceMetres)}
+        </AppText>
         <View style={styles.metaRow}>
           <View style={styles.meta}>
             <Icon
@@ -67,7 +70,9 @@ export function ActiveWalkScreen() {
               size={14}
               color={theme.colors.textMuted}
             />
-            <AppText variant="caption">{route.length} GPS points</AppText>
+            <AppText testID="walk-active.points-text" variant="caption">
+              {route.length} GPS points
+            </AppText>
           </View>
           <View style={styles.meta}>
             <Icon
@@ -75,7 +80,7 @@ export function ActiveWalkScreen() {
               size={14}
               color={theme.colors.textMuted}
             />
-            <AppText variant="caption">
+            <AppText testID="walk-active.stool-count-text" variant="caption">
               {stools.length === 0
                 ? 'No stool logs'
                 : `${stools.length} stool ${stools.length === 1 ? 'log' : 'logs'}`}
@@ -83,15 +88,22 @@ export function ActiveWalkScreen() {
           </View>
         </View>
 
-        {trackingError && <AppText variant="caption">{trackingError}</AppText>}
+        {trackingError && (
+          <AppText testID="walk-active.tracking-error-text" variant="caption">
+            {trackingError}
+          </AppText>
+        )}
         {pendingSaveError && (
-          <AppText variant="caption">{pendingSaveError}</AppText>
+          <AppText testID="walk-active.save-error-text" variant="caption">
+            {pendingSaveError}
+          </AppText>
         )}
 
         <View style={styles.actions}>
           {canRetrySave && (
             <>
               <Button
+                testID="walk-active.retry-save-button"
                 title={isSaving ? 'Saving…' : 'Retry save'}
                 icon="refresh-outline"
                 disabled={isSaving}
@@ -99,6 +111,7 @@ export function ActiveWalkScreen() {
                 style={styles.action}
               />
               <Button
+                testID="walk-active.discard-button"
                 title="Discard"
                 variant="danger"
                 icon="trash-outline"
@@ -111,6 +124,7 @@ export function ActiveWalkScreen() {
           {!canRetrySave && (
             <>
               <Button
+                testID="walk-active.pause-resume-button"
                 title={isPaused ? 'Resume' : 'Pause'}
                 variant="secondary"
                 icon={isPaused ? 'play-outline' : 'pause-outline'}
@@ -119,6 +133,7 @@ export function ActiveWalkScreen() {
                 style={styles.action}
               />
               <Button
+                testID="walk-active.stop-button"
                 title={isSaving ? 'Saving…' : 'Stop Walk'}
                 variant="danger"
                 icon="stop-circle-outline"
@@ -132,6 +147,7 @@ export function ActiveWalkScreen() {
 
         {!canRetrySave && (
           <Button
+            testID="walk-active.log-stool-button"
             title="Log stool"
             variant="secondary"
             icon="camera-outline"

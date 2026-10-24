@@ -61,7 +61,9 @@
     "lint:fix": "expo lint --fix",
     "format": "prettier --write .",
     "simulate:walk": "node scripts/simulate-walk.mjs",
-    "db:types": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" --schema public > src/lib/database.generated.ts"
+    "db:types": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" --schema public > src/lib/database.generated.ts",
+    "e2e:smoke": "maestro test .maestro --include-tags smoke",
+    "e2e:full": "maestro test .maestro --include-tags smoke,full"
   },
   "private": true
 }

@@ -19,19 +19,23 @@ export function SettingsScreen() {
 
       <Card>
         <AppText variant="subtitle">Account</AppText>
-        <AppText>{user?.email || 'Signed in'}</AppText>
+        <AppText testID="settings.account-email">
+          {user?.email || 'Signed in'}
+        </AppText>
         <AppText variant="caption">
           {isSupabaseConfigured
             ? 'Connected to Supabase.'
             : 'Local mock mode — add EXPO_PUBLIC_SUPABASE_URL to use a real backend.'}
         </AppText>
         <Button
+          testID="settings.edit-dog-button"
           title="Edit dog profile"
           variant="secondary"
           icon="paw-outline"
           onPress={() => router.push('/dog')}
         />
         <Button
+          testID="settings.sign-out-button"
           title={signOut.isPending ? 'Signing out…' : 'Sign out'}
           variant="danger"
           icon="log-out-outline"

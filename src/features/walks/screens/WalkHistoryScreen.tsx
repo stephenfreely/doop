@@ -43,7 +43,10 @@ export function WalkHistoryScreen() {
   if (isWalksLoading || isDogLoading) {
     return (
       <Screen>
-        <LoadingState message="Loading walk history…" />
+        <LoadingState
+          testID="history.loading-state"
+          message="Loading walk history…"
+        />
       </Screen>
     );
   }
@@ -52,6 +55,7 @@ export function WalkHistoryScreen() {
     return (
       <Screen>
         <ErrorState
+          testID="history.error-state"
           title="Could not load walks"
           message={error.message}
           onRetry={() => void refetch()}
@@ -69,6 +73,7 @@ export function WalkHistoryScreen() {
   function renderWalk({ item }: { item: Walk }) {
     return (
       <WalkListItem
+        testID={`history.walk-item.${item.id}`}
         walk={item}
         onPress={() => router.push(`/walk/${item.id}`)}
       />
@@ -89,11 +94,13 @@ export function WalkHistoryScreen() {
 
       {walks.length === 0 ? (
         <EmptyState
+          testID="history.empty-state"
           title="No walks yet"
           message="Completed walks will show up here, including any stool samples you logged."
         />
       ) : (
         <FlatList
+          testID="history.list"
           data={walks}
           keyExtractor={(item) => item.id}
           renderItem={renderWalk}

@@ -1,0 +1,61 @@
+# Flow: settings-and-tabs
+#
+# Purpose:
+#   Navigate across all three tabs, check Settings' account info is
+#   visible, and sign out back to the sign-in screen.
+#
+# Preconditions: none — clears state, signs in, and adds a dog itself.
+#
+# Tags: full
+#
+# IDs used:
+#   tabs.history-tab, history.empty-state, tabs.settings-tab,
+#   settings.account-email, settings.edit-dog-button,
+#   settings.sign-out-button, tabs.home-tab, home.start-walk-button,
+#   sign-in.form
+#
+# Flake notes:
+#   - Tab bar buttons are matched by `tabBarButtonTestID`
+#     (app/(tabs)/_layout.tsx), not by the tab label text.
+#   - Signing out clears the react-query user cache (useSignOut), which
+#     the root layout's effect picks up to redirect to "sign-in.form" —
+#     wait for it rather than a fixed sleep.
+appId: com.anonymous.doop
+tags:
+  - full
+---
+- clearState
+- clearKeychain
+- launchApp
+- runFlow: ../subflows/login.yaml
+- runFlow: ../subflows/add-dog.yaml
+
+- tapOn:
+    id: "tabs.history-tab"
+- extendedWaitUntil:
+    visible:
+      id: "history.empty-state"
+    timeout: 8000
+
+- tapOn:
+    id: "tabs.settings-tab"
+- assertVisible:
+    id: "settings.account-email"
+- assertVisible:
+    id: "settings.edit-dog-button"
+- assertVisible:
+    id: "settings.sign-out-button"
+
+- tapOn:
+    id: "tabs.home-tab"
+- assertVisible:
+    id: "home.start-walk-button"
+
+- tapOn:
+    id: "tabs.settings-tab"
+- tapOn:
+    id: "settings.sign-out-button"
+- extendedWaitUntil:
+    visible:
+      id: "sign-in.form"
+    timeout: 8000

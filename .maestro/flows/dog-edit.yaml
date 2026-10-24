@@ -1,0 +1,67 @@
+# Flow: dog-edit
+#
+# Purpose:
+#   Edit an existing dog's name/breed from Settings, without touching the
+#   photo picker.
+#
+# Preconditions: none — clears state and creates a dog itself.
+#
+# Tags: full
+#
+# IDs used:
+#   tabs.settings-tab, settings.edit-dog-button, dog.name-field,
+#   dog.breed-field, dog.save-button, dog.success-text,
+#   settings.account-email, tabs.home-tab, home.dog-avatar
+#
+# Flake notes:
+#   - Name/breed fields are pre-filled with the existing dog's values on
+#     this screen (DogProfileForm reads `existing`), so each field is
+#     erased before retyping.
+#   - Unlike the stool-edit save (which calls router.back() on success),
+#     saving an existing dog profile stays on the dog screen and shows
+#     "dog.success-text" — `back` is used explicitly afterwards.
+appId: com.anonymous.doop
+tags:
+  - full
+---
+- clearState
+- clearKeychain
+- launchApp
+- runFlow: ../subflows/login.yaml
+- runFlow: ../subflows/add-dog.yaml
+
+- tapOn:
+    id: "tabs.settings-tab"
+- assertVisible:
+    id: "settings.edit-dog-button"
+- tapOn:
+    id: "settings.edit-dog-button"
+
+- assertVisible:
+    id: "dog.name-field"
+- tapOn:
+    id: "dog.name-field"
+- eraseText: 50
+- inputText: "Nugget"
+- tapOn:
+    id: "dog.breed-field"
+- eraseText: 50
+- inputText: "Beagle"
+- hideKeyboard
+- tapOn:
+    id: "dog.save-button"
+- extendedWaitUntil:
+    visible:
+      id: "dog.success-text"
+    timeout: 8000
+
+- back
+- assertVisible:
+    id: "settings.account-email"
+
+- tapOn:
+    id: "tabs.home-tab"
+- extendedWaitUntil:
+    visible:
+      id: "home.dog-avatar"
+    timeout: 8000

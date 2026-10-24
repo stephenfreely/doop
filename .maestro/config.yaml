@@ -1,0 +1,16 @@
+# Maestro workspace config for Doop.
+# Run from the repo root with: maestro test .maestro
+# (Maestro auto-discovers this file when pointed at the .maestro directory.)
+#
+# Requires a Dev Client build installed on the target simulator/device —
+# Expo Go cannot run these flows (no expo-location / custom native config).
+appId: com.anonymous.doop
+
+flows:
+  - flows/**
+
+# `maestro test --include-tags smoke` runs only the fast critical-path flow;
+# omit the flag (or use --include-tags smoke,full) to run everything.
+includeTags:
+  - smoke
+  - full

@@ -1,0 +1,29 @@
+# Subflow: grant-location
+#
+# Purpose:
+#   (Re-)launch Doop with the location permission pre-granted, so the OS
+#   permission dialog never appears mid-flow. Call this once, immediately
+#   after `clearState`/`clearKeychain`, before any other interaction.
+#
+# Preconditions:
+#   - `clearState` and `clearKeychain` have already run in the calling flow.
+#
+# IDs used: none (no UI assertions here).
+#
+# Flake notes:
+#   - Uses Maestro's `launchApp.permissions` map instead of tapping the
+#     native iOS permission alert — tapping alert buttons by text is brittle
+#     across iOS versions and this app never needs to test the "denied"
+#     path, so granting up front is both simpler and more stable.
+#   - Camera/photos are left "unset": dog/stool photo capture is optional
+#     product behaviour and these flows deliberately skip it, so there's no
+#     need to pre-answer that prompt either way.
+appId: com.anonymous.doop
+---
+- launchApp:
+    clearState: false
+    permissions:
+      location: allow
+      camera: unset
+      photos: unset
+      notifications: unset

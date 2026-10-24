@@ -32,7 +32,10 @@ export function LogStoolScreen() {
   if (walkId && isLoading) {
     return (
       <Screen>
-        <LoadingState message="Loading stool log…" />
+        <LoadingState
+          testID="stool.loading-state"
+          message="Loading stool log…"
+        />
       </Screen>
     );
   }
@@ -41,6 +44,7 @@ export function LogStoolScreen() {
     return (
       <Screen>
         <ErrorState
+          testID="stool.error-state"
           title="Could not load walk"
           message={error.message}
           onRetry={() => void refetch()}
@@ -189,12 +193,14 @@ function StoolLogForm({ existing, walkId, walk }: StoolLogFormProps) {
 
         <View style={styles.photoActions}>
           <Button
+            testID="stool.take-photo-button"
             title="Take photo"
             icon="camera-outline"
             onPress={() => void takePhoto()}
             style={styles.photoAction}
           />
           <Button
+            testID="stool.library-button"
             title="Library"
             icon="images-outline"
             variant="secondary"
@@ -206,6 +212,7 @@ function StoolLogForm({ existing, walkId, walk }: StoolLogFormProps) {
         <StoolRatingPicker value={rating} onChange={setRating} />
 
         <Field
+          testID="stool.notes-field"
           label="Notes for the vet (optional)"
           value={description}
           onChangeText={setDescription}
@@ -214,9 +221,14 @@ function StoolLogForm({ existing, walkId, walk }: StoolLogFormProps) {
           style={styles.notes}
         />
 
-        {error && <AppText variant="caption">{error}</AppText>}
+        {error && (
+          <AppText testID="stool.error-text" variant="caption">
+            {error}
+          </AppText>
+        )}
 
         <Button
+          testID="stool.save-button"
           title={
             isSaving ? 'Saving…' : existing ? 'Save changes' : 'Save stool log'
           }

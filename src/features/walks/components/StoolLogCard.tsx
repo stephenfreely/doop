@@ -8,14 +8,16 @@ import type { Stool } from '@/features/walks/types/walk';
 type StoolLogCardProps = {
   stool: Stool;
   onPress?: () => void;
+  testID?: string;
 };
 
-export function StoolLogCard({ stool, onPress }: StoolLogCardProps) {
+export function StoolLogCard({ stool, onPress, testID }: StoolLogCardProps) {
   const { theme } = useUnistyles();
   const rating = stool.ratingMeta;
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={!onPress}
       style={({ pressed }) => [

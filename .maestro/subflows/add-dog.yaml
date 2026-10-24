@@ -1,0 +1,55 @@
+# Subflow: add-dog
+#
+# Purpose:
+#   From Home's "No dog yet" empty state, create a dog profile without a
+#   photo (photo capture/picker UI is intentionally not exercised here —
+#   see the top-level README for why).
+#
+# Preconditions:
+#   - Signed in (see subflows/login.yaml).
+#   - Home screen visible showing "home.empty-state" / "home.add-dog-button"
+#     (no dog has been created yet for this mock user).
+#
+# Env vars:
+#   DOG_NAME  (default "Biscuit")
+#   DOG_BREED (default "Labrador")
+#
+# IDs used:
+#   home.add-dog-button, dog.name-field, dog.breed-field, dog.save-button,
+#   dog.success-text, home.start-walk-button
+#
+# Flake notes:
+#   - "dog.save-button" is disabled while the mock update is pending
+#     (~500ms); wait for "dog.success-text" rather than re-tapping save.
+#   - The dog screen is pushed on top of the tab navigator, so the tab bar
+#     is not available to navigate back — use `back` (iOS: edge swipe,
+#     Android: hardware back) instead of a tab-bar tap.
+appId: com.anonymous.doop
+env:
+  DOG_NAME: Biscuit
+  DOG_BREED: Labrador
+---
+- assertVisible:
+    id: "home.add-dog-button"
+- tapOn:
+    id: "home.add-dog-button"
+- assertVisible:
+    id: "dog.name-field"
+- tapOn:
+    id: "dog.name-field"
+- inputText: ${DOG_NAME}
+- tapOn:
+    id: "dog.breed-field"
+- inputText: ${DOG_BREED}
+- hideKeyboard
+- tapOn:
+    id: "dog.save-button"
+- extendedWaitUntil:
+    visible:
+      id: "dog.success-text"
+    timeout: 8000
+- back
+- extendedWaitUntil:
+    visible:
+      id: "home.start-walk-button"
+    timeout: 8000

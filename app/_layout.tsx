@@ -53,7 +53,7 @@ function RootNavigator() {
   if (isLoading) {
     return (
       <Screen>
-        <LoadingState message="Starting Doop…" />
+        <LoadingState testID="root.loading-state" message="Starting Doop…" />
       </Screen>
     );
   }
@@ -62,6 +62,7 @@ function RootNavigator() {
     return (
       <Screen>
         <ErrorState
+          testID="root.error-state"
           title="Could not load session"
           message="Check your connection and try again."
           onRetry={() => void refetch()}

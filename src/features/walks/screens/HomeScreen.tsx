@@ -60,7 +60,7 @@ export function HomeScreen() {
   if (isDogLoading) {
     return (
       <Screen>
-        <LoadingState message="Loading home…" />
+        <LoadingState testID="home.loading-state" message="Loading home…" />
       </Screen>
     );
   }
@@ -69,6 +69,7 @@ export function HomeScreen() {
     return (
       <Screen>
         <ErrorState
+          testID="home.error-state"
           title="Could not load dog"
           message={dogError.message}
           onRetry={() => void refetchDog()}
@@ -82,10 +83,12 @@ export function HomeScreen() {
       <Screen>
         <AppText variant="title">Home</AppText>
         <EmptyState
+          testID="home.empty-state"
           title="No dog yet"
           message="Add a dog profile before you start a walk."
         />
         <Button
+          testID="home.add-dog-button"
           title="Add dog"
           icon="paw-outline"
           onPress={() => router.push('/dog')}
@@ -103,6 +106,7 @@ export function HomeScreen() {
   function renderWalk({ item }: { item: Walk }) {
     return (
       <WalkListItem
+        testID={`home.walk-item.${item.id}`}
         walk={item}
         onPress={() => router.push(`/walk/${item.id}`)}
       />
@@ -112,7 +116,12 @@ export function HomeScreen() {
   return (
     <Screen scroll={false}>
       <View style={styles.header}>
-        <DogAvatar name={dog.name} photoUrl={dog.photoUrl} size="lg" />
+        <DogAvatar
+          testID="home.dog-avatar"
+          name={dog.name}
+          photoUrl={dog.photoUrl}
+          size="lg"
+        />
         <View style={styles.headerCopy}>
           <AppText variant="title">{dog.name}</AppText>
           <AppText variant="caption">{dog.breedLabel}</AppText>
@@ -129,18 +138,23 @@ export function HomeScreen() {
             />
             <AppText variant="caption">This week</AppText>
           </View>
-          <AppText variant="stat">{stats.formattedDistanceThisWeek}</AppText>
+          <AppText testID="home.stat-distance" variant="stat">
+            {stats.formattedDistanceThisWeek}
+          </AppText>
         </Card>
         <Card style={styles.statCard}>
           <View style={styles.statLabel}>
             <Icon name="paw-outline" size={16} color={theme.colors.textMuted} />
             <AppText variant="caption">Walks this week</AppText>
           </View>
-          <AppText variant="stat">{stats.walksThisWeek}</AppText>
+          <AppText testID="home.stat-walks" variant="stat">
+            {stats.walksThisWeek}
+          </AppText>
         </Card>
       </View>
 
       <Button
+        testID="home.start-walk-button"
         title={
           isStarting
             ? 'Starting…'
@@ -152,16 +166,26 @@ export function HomeScreen() {
         disabled={isStarting}
         onPress={() => void startWalk(dog.id)}
       />
-      {error && <AppText variant="caption">{error}</AppText>}
+      {error && (
+        <AppText testID="home.start-error-text" variant="caption">
+          {error}
+        </AppText>
+      )}
 
       <Card style={styles.recentCard}>
         <View style={styles.sectionTitle}>
           <Icon name="time-outline" size={18} color={theme.colors.text} />
           <AppText variant="subtitle">Recent walks</AppText>
         </View>
-        {isWalksLoading && <LoadingState message="Loading walks…" />}
+        {isWalksLoading && (
+          <LoadingState
+            testID="home.walks-loading-state"
+            message="Loading walks…"
+          />
+        )}
         {isWalksError && (
           <ErrorState
+            testID="home.walks-error-state"
             title="Could not load walks"
             message={walksError.message}
             onRetry={() => void refetchWalks()}
@@ -169,6 +193,7 @@ export function HomeScreen() {
         )}
         {!isWalksLoading && !isWalksError && (
           <FlatList
+            testID="home.walks-list"
             data={recent}
             keyExtractor={(item) => item.id}
             renderItem={renderWalk}
@@ -177,6 +202,7 @@ export function HomeScreen() {
             ItemSeparatorComponent={() => <View style={styles.separator} />}
             ListEmptyComponent={
               <EmptyState
+                testID="home.walks-empty-state"
                 title="No walks yet"
                 message="Start a walk to track distance and log stool samples for your vet."
               />

@@ -25,7 +25,10 @@ export function DogProfileScreen() {
   if (isLoading) {
     return (
       <Screen>
-        <LoadingState message="Loading dog profile…" />
+        <LoadingState
+          testID="dog.loading-state"
+          message="Loading dog profile…"
+        />
       </Screen>
     );
   }
@@ -34,6 +37,7 @@ export function DogProfileScreen() {
     return (
       <Screen>
         <ErrorState
+          testID="dog.error-state"
           title="Could not load dog"
           message={error.message}
           onRetry={() => void refetch()}
@@ -103,11 +107,13 @@ function DogProfileForm({ ownerId, existing }: DogProfileFormProps) {
       <Card>
         <View style={styles.avatarRow}>
           <DogAvatar
+            testID="dog.avatar"
             name={name || existing?.name || 'Dog'}
             photoUrl={photoUrl || existing?.photoUrl}
             size="lg"
           />
           <Button
+            testID="dog.choose-photo-button"
             title="Choose photo"
             variant="secondary"
             icon="images-outline"
@@ -116,12 +122,14 @@ function DogProfileForm({ ownerId, existing }: DogProfileFormProps) {
         </View>
 
         <Field
+          testID="dog.name-field"
           label="Name"
           value={name}
           onChangeText={setName}
           error={errors.name}
         />
         <Field
+          testID="dog.breed-field"
           label="Breed (optional)"
           value={breed}
           onChangeText={setBreed}
@@ -129,13 +137,18 @@ function DogProfileForm({ ownerId, existing }: DogProfileFormProps) {
         />
 
         {updateDog.isError && (
-          <AppText variant="caption">{updateDog.error.message}</AppText>
+          <AppText testID="dog.error-text" variant="caption">
+            {updateDog.error.message}
+          </AppText>
         )}
         {updateDog.isSuccess && (
-          <AppText variant="caption">Profile saved.</AppText>
+          <AppText testID="dog.success-text" variant="caption">
+            Profile saved.
+          </AppText>
         )}
 
         <Button
+          testID="dog.save-button"
           title={updateDog.isPending ? 'Saving…' : 'Save dog'}
           disabled={updateDog.isPending}
           onPress={() => void onSave()}

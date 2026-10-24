@@ -1,0 +1,49 @@
+# Subflow: login
+#
+# Purpose:
+#   Sign in through the local mock backend (no Supabase) and wait for the
+#   root auth gate to clear. Because the mock backend creates a user on
+#   first sign-in for any unseen email (see src/lib/mockApi.ts), this one
+#   subflow covers both "returning user" and "new user" sign-in — call it
+#   again with the same TEST_EMAIL in the same run to simulate a returning
+#   user, or rely on `clearState` at the top of the calling flow for a
+#   fresh identity every run.
+#
+# Preconditions:
+#   - App launched (clearState already run by the calling flow).
+#   - Currently on the sign-in screen ("sign-in.form" visible). The root
+#     layout redirects here automatically when there's no stored user.
+#
+# Env vars (override with `-e TEST_EMAIL=... -e TEST_PASSWORD=...`):
+#   TEST_EMAIL    - must satisfy the app's email() validation
+#   TEST_PASSWORD - must be 6+ characters
+#
+# IDs used:
+#   sign-in.form, sign-in.email-field, sign-in.password-field,
+#   sign-in.submit-button
+#
+# Flake notes:
+#   - The mock backend simulates ~500ms latency per call
+#     (MOCK_LATENCY_MS in src/lib/mockApi.ts), and the root layout performs
+#     its own session re-check after sign-in before redirecting away from
+#     sign-in — wait for the form to disappear rather than a fixed sleep.
+appId: com.anonymous.doop
+env:
+  TEST_EMAIL: doop.e2e@example.com
+  TEST_PASSWORD: TestPass123!
+---
+- assertVisible:
+    id: "sign-in.form"
+- tapOn:
+    id: "sign-in.email-field"
+- inputText: ${TEST_EMAIL}
+- tapOn:
+    id: "sign-in.password-field"
+- inputText: ${TEST_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "sign-in.submit-button"
+- extendedWaitUntil:
+    notVisible:
+      id: "sign-in.form"
+    timeout: 8000

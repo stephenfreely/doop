@@ -1,0 +1,34 @@
+# Flow: home-empty-vs-ready
+#
+# Purpose:
+#   Confirm Home shows the "no dog" empty state right after sign-in, and
+#   switches to the ready state (stats + Start Walk) once a dog exists.
+#
+# Preconditions: none — clears state and signs in itself.
+#
+# Tags: full
+#
+# IDs used:
+#   home.empty-state, home.add-dog-button, home.start-walk-button
+#
+# Flake notes: none known.
+appId: com.anonymous.doop
+tags:
+  - full
+---
+- clearState
+- clearKeychain
+- launchApp
+- runFlow: ../subflows/login.yaml
+
+- assertVisible:
+    id: "home.empty-state"
+- assertVisible:
+    id: "home.add-dog-button"
+
+- runFlow: ../subflows/add-dog.yaml
+
+- assertVisible:
+    id: "home.start-walk-button"
+- assertNotVisible:
+    id: "home.empty-state"

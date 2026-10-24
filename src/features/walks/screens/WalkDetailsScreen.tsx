@@ -25,7 +25,10 @@ export function WalkDetailsScreen() {
   if (isLoading) {
     return (
       <Screen>
-        <LoadingState message="Loading walk…" />
+        <LoadingState
+          testID="walk-details.loading-state"
+          message="Loading walk…"
+        />
       </Screen>
     );
   }
@@ -34,6 +37,7 @@ export function WalkDetailsScreen() {
     return (
       <Screen>
         <ErrorState
+          testID="walk-details.error-state"
           title="Could not load walk"
           message={error.message}
           onRetry={() => void refetch()}
@@ -46,6 +50,7 @@ export function WalkDetailsScreen() {
     return (
       <Screen>
         <ErrorState
+          testID="walk-details.error-state"
           title="Walk not found"
           message="This walk may have been deleted."
           onRetry={() => router.replace('/history')}
@@ -75,7 +80,7 @@ export function WalkDetailsScreen() {
       </View>
 
       <View style={styles.mapWrap}>
-        <WalkMap route={walk.route} />
+        <WalkMap testID="walk-details.map" route={walk.route} />
       </View>
 
       <Card>
@@ -99,6 +104,7 @@ export function WalkDetailsScreen() {
         </AppText>
         {stools.length === 0 ? (
           <EmptyState
+            testID="walk-details.stool-empty-state"
             title="No stool logged"
             message="Add a sample from this walk — photo, consistency, and notes."
           />
@@ -106,6 +112,7 @@ export function WalkDetailsScreen() {
           stools.map((stool) => (
             <StoolLogCard
               key={stool.id}
+              testID={`walk-details.stool-item.${stool.id}`}
               stool={stool}
               onPress={() =>
                 router.push({
@@ -117,6 +124,7 @@ export function WalkDetailsScreen() {
           ))
         )}
         <Button
+          testID="walk-details.add-stool-button"
           title="Add stool log"
           icon="camera-outline"
           variant="secondary"
@@ -130,10 +138,13 @@ export function WalkDetailsScreen() {
       </Card>
 
       {deleteWalk.isError && (
-        <AppText variant="caption">{deleteWalk.error.message}</AppText>
+        <AppText testID="walk-details.delete-error-text" variant="caption">
+          {deleteWalk.error.message}
+        </AppText>
       )}
 
       <Button
+        testID="walk-details.delete-button"
         title={deleteWalk.isPending ? 'Deleting…' : 'Delete walk'}
         variant="danger"
         icon="trash-outline"

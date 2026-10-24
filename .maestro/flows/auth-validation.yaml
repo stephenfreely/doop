@@ -1,0 +1,66 @@
+# Flow: auth-validation
+#
+# Purpose:
+#   Exercise sign-in form validation (empty submit, invalid email, short
+#   password) and the sign-in <-> sign-up mode toggle, ending with a
+#   successful sign-up.
+#
+# Preconditions: none — clears state itself.
+#
+# Tags: full
+#
+# IDs used:
+#   sign-in.form, sign-in.submit-button, sign-in.email-field,
+#   sign-in.password-field, sign-in.toggle-mode-button
+#
+# Flake notes:
+#   - Validation is client-side zod (src/features/auth/schemas/authSchema.ts)
+#     and runs synchronously, no network/mock latency to wait out — we only
+#     assert the form is still on screen after a bad submit, not the error
+#     copy itself.
+#   - The email/password fields keep their text across the mode toggle
+#     (component state, not reset), so each retyping step erases first.
+appId: com.anonymous.doop
+tags:
+  - full
+---
+- clearState
+- clearKeychain
+- launchApp
+
+- assertVisible:
+    id: "sign-in.form"
+- tapOn:
+    id: "sign-in.submit-button"
+- assertVisible:
+    id: "sign-in.form"
+
+- tapOn:
+    id: "sign-in.email-field"
+- inputText: "not-an-email"
+- tapOn:
+    id: "sign-in.password-field"
+- inputText: "123"
+- hideKeyboard
+- tapOn:
+    id: "sign-in.submit-button"
+- assertVisible:
+    id: "sign-in.form"
+
+- tapOn:
+    id: "sign-in.toggle-mode-button"
+- tapOn:
+    id: "sign-in.email-field"
+- eraseText: 50
+- inputText: "doop.signup.e2e@example.com"
+- tapOn:
+    id: "sign-in.password-field"
+- eraseText: 50
+- inputText: "ValidPass123!"
+- hideKeyboard
+- tapOn:
+    id: "sign-in.submit-button"
+- extendedWaitUntil:
+    notVisible:
+      id: "sign-in.form"
+    timeout: 8000

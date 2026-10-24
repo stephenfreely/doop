@@ -10,12 +10,14 @@ type WalkMapProps = {
   route: Coordinate[];
   showsUserLocation?: boolean;
   followsUserLocation?: boolean;
+  testID?: string;
 };
 
 export function WalkMap({
   route,
   showsUserLocation = false,
   followsUserLocation = false,
+  testID,
 }: WalkMapProps) {
   const { theme } = useUnistyles();
   const region = getRouteRegion(route);
@@ -23,7 +25,7 @@ export function WalkMap({
 
   if (Platform.OS === 'web') {
     return (
-      <View style={styles.fallback}>
+      <View style={styles.fallback} testID={testID}>
         <AppText variant="caption">
           Maps are available on iOS and Android. {route.length} GPS points
           recorded.
@@ -34,6 +36,7 @@ export function WalkMap({
 
   return (
     <MapView
+      testID={testID}
       style={styles.map}
       initialRegion={region}
       region={followsUserLocation ? undefined : region}

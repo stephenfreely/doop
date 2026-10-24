@@ -1,0 +1,71 @@
+# Flow: walk-pause-resume-continue
+#
+# Purpose:
+#   Start a walk, pause it, resume it, leave the active-walk screen
+#   (simulating backgrounding/navigating away), then continue it from
+#   Home's "Continue walk" button and confirm it's still the same
+#   in-progress walk.
+#
+# Preconditions: none — clears state, signs in, and adds a dog itself.
+#
+# Tags: full
+#
+# IDs used:
+#   home.start-walk-button, walk-active.status-text,
+#   walk-active.pause-resume-button
+#
+# Flake notes:
+#   - "walk-active.status-text" renders "Paused" / "Walking" / "Stopped" —
+#     asserted as content on a stable testID, not used to *select* the
+#     element, so it's consistent with the no-copy-selectors rule.
+#   - The active-walk screen is pushed directly on top of the tab
+#     navigator (not nested inside it), so `back` returns straight to
+#     Home with the tab bar visible again; tapping "Start Walk" again
+#     while a walk is in progress just re-pushes the same screen (see
+#     useStartWalk.ts) rather than starting a second walk or re-prompting
+#     for location permission.
+#   - This flow intentionally never completes or discards the walk — it
+#     ends mid-walk. That's fine: every flow starts with `clearState`.
+appId: com.anonymous.doop
+tags:
+  - full
+---
+- clearState
+- clearKeychain
+- runFlow: ../subflows/grant-location.yaml
+- runFlow: ../subflows/login.yaml
+- runFlow: ../subflows/add-dog.yaml
+
+- tapOn:
+    id: "home.start-walk-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.status-text"
+      text: ".*Walking.*"
+    timeout: 8000
+
+- tapOn:
+    id: "walk-active.pause-resume-button"
+- assertVisible:
+    id: "walk-active.status-text"
+    text: ".*Paused.*"
+
+- tapOn:
+    id: "walk-active.pause-resume-button"
+- assertVisible:
+    id: "walk-active.status-text"
+    text: ".*Walking.*"
+
+- back
+- extendedWaitUntil:
+    visible:
+      id: "home.start-walk-button"
+    timeout: 8000
+
+- tapOn:
+    id: "home.start-walk-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.status-text"
+      text: ".*Walking.*"
+    timeout: 8000

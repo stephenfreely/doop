@@ -25,6 +25,7 @@ export function StoolRatingPicker({ value, onChange }: StoolRatingPickerProps) {
           return (
             <Pressable
               key={rating.value}
+              testID={`stool.rating-${rating.value}`}
               accessibilityRole="button"
               accessibilityState={{ selected: selectedRating }}
               accessibilityLabel={`${rating.value}. ${rating.label}`}

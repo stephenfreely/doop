@@ -8,15 +8,17 @@ import type { Walk } from '@/features/walks/types/walk';
 type WalkListItemProps = {
   walk: Walk;
   onPress: () => void;
+  testID?: string;
 };
 
-export function WalkListItem({ walk, onPress }: WalkListItemProps) {
+export function WalkListItem({ walk, onPress, testID }: WalkListItemProps) {
   const { theme } = useUnistyles();
   const stool = walk.latestStool;
   const rating = stool?.ratingMeta;
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >

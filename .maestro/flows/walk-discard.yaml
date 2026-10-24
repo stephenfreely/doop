@@ -1,0 +1,68 @@
+# Flow: walk-discard
+#
+# Purpose:
+#   Trigger the "could not save" retry/discard UI by stopping a walk
+#   before any GPS point has been recorded, then discard it and confirm
+#   no walk was created.
+#
+# Preconditions: none — clears state, signs in, and adds a dog itself.
+#
+# Tags: full
+#
+# IDs used:
+#   home.start-walk-button, walk-active.status-text, walk-active.stop-button,
+#   walk-active.save-error-text, walk-active.retry-save-button,
+#   walk-active.discard-button, tabs.history-tab, history.empty-state
+#
+# Flake notes:
+#   - Location permission is granted (via the grant-location subflow) so
+#     useStartWalk's permission check passes and we actually reach the
+#     active-walk screen — but `setLocation` is never called, and the iOS
+#     simulator delivers no location updates until it is. completeWalk()
+#     requires at least one GPS point (see useCompleteWalk.ts), so stopping
+#     immediately is exactly the condition that surfaces
+#     "walk-active.retry-save-button" / "walk-active.discard-button". If a
+#     future change makes the simulator deliver a default location, this
+#     flow would need a tighter tap, not a sleep, to still land on zero
+#     points.
+appId: com.anonymous.doop
+tags:
+  - full
+---
+- clearState
+- clearKeychain
+- runFlow: ../subflows/grant-location.yaml
+- runFlow: ../subflows/login.yaml
+- runFlow: ../subflows/add-dog.yaml
+
+- tapOn:
+    id: "home.start-walk-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.status-text"
+    timeout: 8000
+
+- tapOn:
+    id: "walk-active.stop-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.save-error-text"
+    timeout: 8000
+- assertVisible:
+    id: "walk-active.retry-save-button"
+- assertVisible:
+    id: "walk-active.discard-button"
+
+- tapOn:
+    id: "walk-active.discard-button"
+- extendedWaitUntil:
+    visible:
+      id: "home.start-walk-button"
+    timeout: 8000
+
+- tapOn:
+    id: "tabs.history-tab"
+- extendedWaitUntil:
+    visible:
+      id: "history.empty-state"
+    timeout: 8000

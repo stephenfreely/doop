@@ -9,11 +9,15 @@ const ThemedSpinner = withUnistyles(ActivityIndicator, (theme) => ({
 
 type LoadingStateProps = {
   message?: string;
+  testID?: string;
 };
 
-export function LoadingState({ message = 'Loading…' }: LoadingStateProps) {
+export function LoadingState({
+  message = 'Loading…',
+  testID,
+}: LoadingStateProps) {
   return (
-    <View style={styles.wrap}>
+    <View style={styles.wrap} testID={testID}>
       <ThemedSpinner />
       <AppText variant="caption">{message}</AppText>
     </View>

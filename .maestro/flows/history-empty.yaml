@@ -1,0 +1,28 @@
+# Flow: history-empty
+#
+# Purpose:
+#   A dog with no completed walks shows the History tab's empty state.
+#
+# Preconditions: none — clears state, signs in, and adds a dog itself.
+#
+# Tags: full
+#
+# IDs used: tabs.history-tab, history.empty-state
+#
+# Flake notes: none known.
+appId: com.anonymous.doop
+tags:
+  - full
+---
+- clearState
+- clearKeychain
+- launchApp
+- runFlow: ../subflows/login.yaml
+- runFlow: ../subflows/add-dog.yaml
+
+- tapOn:
+    id: "tabs.history-tab"
+- extendedWaitUntil:
+    visible:
+      id: "history.empty-state"
+    timeout: 8000

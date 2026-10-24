@@ -1,0 +1,96 @@
+# Flow: stool-edit
+#
+# Purpose:
+#   Log a stool sample during a walk, complete the walk, then open that
+#   stool log from walk details and edit its rating and notes.
+#
+# Preconditions: none — clears state, signs in, adds a dog, and completes
+#   a walk with one stool log itself.
+#
+# Tags: full
+#
+# IDs used:
+#   home.start-walk-button, walk-active.status-text,
+#   walk-active.points-text, walk-active.log-stool-button,
+#   stool.rating-2, stool.rating-6, stool.notes-field, stool.save-button,
+#   walk-active.stool-count-text, walk-active.stop-button,
+#   walk-details.map, walk-details.stool-item.<id>
+#
+# Flake notes:
+#   - See flows/smoke.yaml for GPS/mock-latency notes — the same
+#     setLocation + extendedWaitUntil pattern is used here to get one
+#     valid route point before stopping.
+#   - Both the "new stool" and "edit stool" save paths in LogStoolScreen
+#     call router.back() on success, so after the second save we expect
+#     to land back on walk details, not a success banner.
+appId: com.anonymous.doop
+tags:
+  - full
+---
+- clearState
+- clearKeychain
+- runFlow: ../subflows/grant-location.yaml
+- runFlow: ../subflows/login.yaml
+- runFlow: ../subflows/add-dog.yaml
+
+- tapOn:
+    id: "home.start-walk-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.status-text"
+    timeout: 8000
+- setLocation:
+    latitude: 37.7749
+    longitude: -122.4194
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.points-text"
+      text: ".*[1-9].*"
+    timeout: 15000
+
+- tapOn:
+    id: "walk-active.log-stool-button"
+- extendedWaitUntil:
+    visible:
+      id: "stool.rating-2"
+    timeout: 8000
+- tapOn:
+    id: "stool.rating-2"
+- tapOn:
+    id: "stool.notes-field"
+- inputText: "Initial note"
+- hideKeyboard
+- tapOn:
+    id: "stool.save-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-active.stool-count-text"
+      text: ".*1.*"
+    timeout: 8000
+
+- tapOn:
+    id: "walk-active.stop-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-details.map"
+    timeout: 10000
+
+- tapOn:
+    id: "walk-details\\.stool-item\\..+"
+- extendedWaitUntil:
+    visible:
+      id: "stool.notes-field"
+    timeout: 8000
+- tapOn:
+    id: "stool.rating-6"
+- tapOn:
+    id: "stool.notes-field"
+- eraseText: 100
+- inputText: "Updated note - loose, watched overnight"
+- hideKeyboard
+- tapOn:
+    id: "stool.save-button"
+- extendedWaitUntil:
+    visible:
+      id: "walk-details.map"
+    timeout: 8000

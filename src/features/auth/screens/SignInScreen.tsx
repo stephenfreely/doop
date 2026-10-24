@@ -39,9 +39,10 @@ export function SignInScreen() {
         Track walks. Keep the architecture small.
       </AppText>
 
-      <Card>
+      <Card testID="sign-in.form">
         <AppText variant="subtitle">{title}</AppText>
         <Field
+          testID="sign-in.email-field"
           label="Email"
           autoCapitalize="none"
           keyboardType="email-address"
@@ -50,6 +51,7 @@ export function SignInScreen() {
           error={errors.email}
         />
         <Field
+          testID="sign-in.password-field"
           label="Password"
           secureTextEntry
           value={password}
@@ -57,14 +59,18 @@ export function SignInScreen() {
           error={errors.password}
         />
         {mutation.error && (
-          <AppText variant="caption">{mutation.error.message}</AppText>
+          <AppText testID="sign-in.error-text" variant="caption">
+            {mutation.error.message}
+          </AppText>
         )}
         <Button
+          testID="sign-in.submit-button"
           title={mutation.isPending ? 'Please wait…' : title}
           disabled={mutation.isPending}
           onPress={() => void onSubmit()}
         />
         <Button
+          testID="sign-in.toggle-mode-button"
           variant="ghost"
           title={
             mode === 'signIn'
@@ -79,7 +85,7 @@ export function SignInScreen() {
       </Card>
 
       {!isSupabaseConfigured && (
-        <AppText variant="caption">
+        <AppText testID="sign-in.mock-mode-notice" variant="caption">
           Supabase is not configured. Sign-in uses local AsyncStorage so you can
           demo the app without a backend.
         </AppText>
